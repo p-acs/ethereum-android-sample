@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Ethereum Android Sample</string>
+    <string name="title_activity_main">Ethereum Android Sample</string>
+    <string name="prompt_address">Account address</string>
+    <string name="action_request_account">Request</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="balance">Balance:</string>
+    <string name="error_occured">An error occurred:</string>
+    <string name="ethereum_ethereum_not_installed">You  need to install Ethereum Android first</string>
+</resources>
