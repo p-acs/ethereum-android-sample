@@ -20,9 +20,11 @@ import de.petendi.ethereum.android.EthereumAndroid;
 import de.petendi.ethereum.android.EthereumAndroidCallback;
 import de.petendi.ethereum.android.EthereumAndroidFactory;
 import de.petendi.ethereum.android.EthereumNotInstalledException;
-import de.petendi.ethereum.android.service.model.AccountResponse;
-import de.petendi.ethereum.android.service.model.Response;
+import de.petendi.ethereum.android.Utils;
+import de.petendi.ethereum.android.service.model.RpcCommand;
 import de.petendi.ethereum.android.service.model.ServiceError;
+import de.petendi.ethereum.android.service.model.WrappedRequest;
+import de.petendi.ethereum.android.service.model.WrappedResponse;
 
 public class MainActivity extends AppCompatActivity implements EthereumAndroidCallback {
 
@@ -81,7 +83,10 @@ public class MainActivity extends AppCompatActivity implements EthereumAndroidCa
             focusView.requestFocus();
         } else {
             showProgress(true);
-            ethereumAndroid.getAccount(accountAddress);
+            WrappedRequest wrappedRequest = new WrappedRequest();
+            wrappedRequest.setCommand(RpcCommand.eth_getBalance.toString());
+            wrappedRequest.setParameters(new String[]{accountAddress,"latest"});
+            ethereumAndroid.send(wrappedRequest);
         }
     }
 
@@ -116,15 +121,18 @@ public class MainActivity extends AppCompatActivity implements EthereumAndroidCa
 
 
     @Override
-    public void handleResponse(int i, final Response response) {
+    public void handleResponse(int i, final WrappedResponse response) {
         Runnable updateUiTask = new Runnable() {
             @Override
             public void run() {
                 showProgress(false);
                 TextView balanceTextView = (TextView) findViewById(R.id.account_balance);
-                String balance = getString(R.string.balance);
-                balanceTextView.setText(balance + " " + ((AccountResponse) response).getBalance());
-
+                if(response.isSuccess()) {
+                    String balance = getString(R.string.balance);
+                    balanceTextView.setText(balance + " " + Utils.fromHexString((String)response.getResponse()));
+                } else {
+                    balanceTextView.setText(response.getErrorMessage());
+                }
             }
         };
         runOnUiThread(updateUiTask);
