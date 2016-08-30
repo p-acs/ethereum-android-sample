@@ -5,17 +5,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.util.HashMap;
 
 import de.petendi.ethereum.android.EthereumAndroid;
 import de.petendi.ethereum.android.EthereumAndroidFactory;
 import de.petendi.ethereum.android.EthereumNotInstalledException;
+import de.petendi.ethereum.android.Utils;
 import de.petendi.ethereum.android.contract.PendingTransaction;
 import de.petendi.ethereum.android.sample.contract.SimpleOwnedStorage;
 import de.petendi.ethereum.android.service.model.RpcCommand;
@@ -141,12 +144,22 @@ public class SimpleStorageActivity extends AppCompatActivity {
             }
         });
 
+
+        Button buttonReadOwner = (Button) findViewById(R.id.readOwner);
+        buttonReadOwner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                readOwner();
+            }
+        });
+
         AutoCompleteTextView valueTextview = (AutoCompleteTextView) findViewById(R.id.storage_input);
 
         switch (currentState) {
             case NO_CONTRACT_DEPLOYED:
                 buttonWrite.setVisibility(View.GONE);
                 buttonRead.setVisibility(View.GONE);
+                buttonReadOwner.setVisibility(View.GONE);
                 buttonDeploy.setVisibility(View.VISIBLE);
                 buttonReadReceipt.setVisibility(View.GONE);
                 valueTextview.setVisibility(View.GONE);
@@ -154,6 +167,7 @@ public class SimpleStorageActivity extends AppCompatActivity {
             case CONTRACT_NOT_MINED_YET:
                 buttonWrite.setVisibility(View.GONE);
                 buttonRead.setVisibility(View.GONE);
+                buttonReadOwner.setVisibility(View.GONE);
                 buttonDeploy.setVisibility(View.GONE);
                 buttonReadReceipt.setVisibility(View.VISIBLE);
                 valueTextview.setVisibility(View.GONE);
@@ -161,6 +175,7 @@ public class SimpleStorageActivity extends AppCompatActivity {
             case CONTRACT_DEPLOYED:
                 buttonWrite.setVisibility(View.VISIBLE);
                 buttonRead.setVisibility(View.VISIBLE);
+                buttonReadOwner.setVisibility(View.VISIBLE);
                 buttonDeploy.setVisibility(View.GONE);
                 buttonReadReceipt.setVisibility(View.GONE);
                 valueTextview.setVisibility(View.VISIBLE);
@@ -169,6 +184,26 @@ public class SimpleStorageActivity extends AppCompatActivity {
 
     }
 
+
+    private void readOwner() {
+        SharedPreferences prefs = getSharedPreferences(SIMPLE_STORAGE_PREFS, MODE_PRIVATE);
+        String contractAddress = prefs.getString(CONTRACT_ADDRESS, null);
+        final SimpleOwnedStorage simpleOwnedStorage = ethereumAndroid.contracts().bind(contractAddress, CONTRACT_ABI, SimpleOwnedStorage.class);
+        Runnable readTask = new Runnable() {
+            @Override
+            public void run() {
+                final byte[] owner = Base64.decode(simpleOwnedStorage.currentOwner(),Base64.DEFAULT);
+                Runnable showResult = new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SimpleStorageActivity.this, "owner: " + Utils.toHexString(new BigInteger(owner)), Toast.LENGTH_LONG).show();
+                    }
+                };
+                SimpleStorageActivity.this.runOnUiThread(showResult);
+            }
+        };
+        new Thread(readTask, "read owner thread").start();
+    }
 
     private void readValue() {
         SharedPreferences prefs = getSharedPreferences(SIMPLE_STORAGE_PREFS, MODE_PRIVATE);

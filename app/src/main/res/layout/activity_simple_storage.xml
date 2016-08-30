@@ -62,7 +62,6 @@
 
             </android.support.design.widget.TextInputLayout>
 
-
             <Button
                 android:id="@+id/read"
                 style="?android:textAppearanceSmall"
@@ -80,9 +79,15 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/simpleStorage_write"
                 android:textStyle="bold" />
-
-
-
+            
+            <Button
+                android:id="@+id/readOwner"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/simpleStorage_readowner"
+                android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

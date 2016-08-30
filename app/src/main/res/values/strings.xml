@@ -13,6 +13,7 @@
     <string name="sample_simple_storage">Simple Storage</string>
     <string name="prompt_value_to_store">Value to store</string>
     <string name="simpleStorage_read">Read value</string>
+    <string name="simpleStorage_readowner">Read owner</string>
     <string name="simpleStorage_deploy">Deploy contract</string>
     <string name="simpleStorage_read_receipt">Read receipt</string>
 </resources>
