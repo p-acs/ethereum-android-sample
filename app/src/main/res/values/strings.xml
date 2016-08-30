@@ -1,10 +1,18 @@
 <resources>
-    <string name="app_name">Ethereum Android Sample</string>
-    <string name="title_activity_main">Ethereum Android Sample</string>
+    <string name="app_name">Ethereum Android Samples</string>
     <string name="prompt_address">Account address</string>
     <string name="action_request_account">Request</string>
     <string name="error_field_required">This field is required</string>
     <string name="balance">Balance:</string>
     <string name="error_occured">An error occurred:</string>
     <string name="ethereum_ethereum_not_installed">You  need to install Ethereum Android first</string>
+    <string name="action_request_account_sync">Request sync</string>
+    <string name="simpleStorage_write">Write value</string>
+    <string name="action_settings">Settings</string>
+    <string name="sample_account_balance">Account Balance</string>
+    <string name="sample_simple_storage">Simple Storage</string>
+    <string name="prompt_value_to_store">Value to store</string>
+    <string name="simpleStorage_read">Read value</string>
+    <string name="simpleStorage_deploy">Deploy contract</string>
+    <string name="simpleStorage_read_receipt">Read receipt</string>
 </resources>

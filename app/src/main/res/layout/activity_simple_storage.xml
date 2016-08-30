@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="de.petendi.ethereum.android.sample.AccountBalanceActivity">
+    tools:context="de.petendi.ethereum.android.sample.SimpleStorageActivity">
 
     <!-- Login progress -->
     <ProgressBar
@@ -29,46 +29,57 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <Button
+                android:id="@+id/deploy_contract"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/simpleStorage_deploy"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/read_receipt"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/simpleStorage_read_receipt"
+                android:textStyle="bold" />
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:id="@+id/address_input"
+                    android:id="@+id/storage_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_address"
+                    android:hint="@string/prompt_value_to_store"
                     android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
+
             <Button
-                android:id="@+id/request_account"
+                android:id="@+id/read"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_request_account"
+                android:text="@string/simpleStorage_read"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/request_account_sync"
+                android:id="@+id/write"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_request_account_sync"
+                android:text="@string/simpleStorage_write"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:id="@+id/account_balance"
-                style="?android:textAppearanceMedium"
-                />
 
 
 

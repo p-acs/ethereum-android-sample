@@ -33,4 +33,17 @@ dependencies {
     compile 'de.petendi:ethereum-android-lib:0.1.2-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
+    testCompile 'org.ethereum:ethereumj-core:1.2.0-RELEASE'
+    testCompile 'commons-io:commons-io:2.4'
+    testCompile 'junit:junit:4.12'
 }
+
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
+        force 'com.fasterxml.jackson.core:jackson-annotations:2.7.0'
+        force 'com.fasterxml.jackson.core:jackson-core:2.7.1'
+    }
+}
+

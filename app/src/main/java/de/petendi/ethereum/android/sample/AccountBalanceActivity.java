@@ -3,6 +3,7 @@ package de.petendi.ethereum.android.sample;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +27,26 @@ import de.petendi.ethereum.android.service.model.ServiceError;
 import de.petendi.ethereum.android.service.model.WrappedRequest;
 import de.petendi.ethereum.android.service.model.WrappedResponse;
 
-public class MainActivity extends AppCompatActivity implements EthereumAndroidCallback {
+public class AccountBalanceActivity extends AppCompatActivity implements EthereumAndroidCallback {
+
+    private class MyAsyncTask extends AsyncTask<Void,Void,WrappedResponse> {
+        private final WrappedRequest request;
+
+        private MyAsyncTask(WrappedRequest request) {
+            this.request = request;
+        }
+
+
+        @Override
+        protected WrappedResponse doInBackground(Void... voids) {
+            return ethereumAndroid.send(request);
+        }
+
+        @Override
+        protected void onPostExecute(final WrappedResponse wrappedResponse) {
+            showResponse(wrappedResponse);
+        }
+    }
 
     private AutoCompleteTextView accountInput;
     private View progressView;
@@ -64,8 +84,23 @@ public class MainActivity extends AppCompatActivity implements EthereumAndroidCa
                 request();
             }
         });
+        Button requestSyncButton = (Button) findViewById(R.id.request_account_sync);
+        requestSyncButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestSync();
+            }
+        });
         formView = findViewById(R.id.form);
         progressView = findViewById(R.id.progress);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(ethereumAndroid!=null) {
+            ethereumAndroid.release();
+        }
     }
 
     private void request() {
@@ -85,8 +120,30 @@ public class MainActivity extends AppCompatActivity implements EthereumAndroidCa
             showProgress(true);
             WrappedRequest wrappedRequest = new WrappedRequest();
             wrappedRequest.setCommand(RpcCommand.eth_getBalance.toString());
-            wrappedRequest.setParameters(new String[]{accountAddress,"latest"});
-            ethereumAndroid.send(wrappedRequest);
+            wrappedRequest.setParameters(new String[]{accountAddress, "latest"});
+            ethereumAndroid.sendAsync(wrappedRequest);
+        }
+    }
+
+    private void requestSync() {
+
+        accountInput.setError(null);
+        String accountAddress = accountInput.getText().toString();
+        boolean cancel = false;
+        View focusView = null;
+        if (TextUtils.isEmpty(accountAddress)) {
+            accountInput.setError(getString(R.string.error_field_required));
+            focusView = accountInput;
+            cancel = true;
+        }
+        if (cancel) {
+            focusView.requestFocus();
+        } else {
+            showProgress(true);
+            WrappedRequest wrappedRequest = new WrappedRequest();
+            wrappedRequest.setCommand(RpcCommand.eth_getBalance.toString());
+            wrappedRequest.setParameters(new String[]{accountAddress, "latest"});
+            new MyAsyncTask(wrappedRequest).execute();
         }
     }
 
@@ -125,18 +182,22 @@ public class MainActivity extends AppCompatActivity implements EthereumAndroidCa
         Runnable updateUiTask = new Runnable() {
             @Override
             public void run() {
-                showProgress(false);
-                TextView balanceTextView = (TextView) findViewById(R.id.account_balance);
-                if(response.isSuccess()) {
-                    String balance = getString(R.string.balance);
-                    balanceTextView.setText(balance + " " + Utils.fromHexString((String)response.getResponse()));
-                } else {
-                    balanceTextView.setText(response.getErrorMessage());
-                }
+                showResponse(response);
             }
         };
         runOnUiThread(updateUiTask);
 
+    }
+
+    private void showResponse(final WrappedResponse response) {
+        showProgress(false);
+        TextView balanceTextView = (TextView) findViewById(R.id.account_balance);
+        if(response.isSuccess()) {
+            String balance = getString(R.string.balance);
+            balanceTextView.setText(balance + " " + Utils.fromHexString((String)response.getResponse()));
+        } else {
+            balanceTextView.setText(response.getErrorMessage());
+        }
     }
 
     @Override

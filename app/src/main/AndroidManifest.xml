@@ -8,14 +8,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="de.petendi.ethereum.android.sample.MainActivity">
+        <activity
+            android:name=".SampleListActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".AccountBalanceActivity"
+            android:label="@string/sample_account_balance" />
+        <activity
+            android:name=".SimpleStorageActivity"
+            android:label="@string/sample_simple_storage" />
     </application>
-
 </manifest>
