@@ -20,6 +20,7 @@ import de.petendi.ethereum.android.EthereumAndroidFactory;
 import de.petendi.ethereum.android.EthereumNotInstalledException;
 import de.petendi.ethereum.android.Utils;
 import de.petendi.ethereum.android.contract.PendingTransaction;
+import de.petendi.ethereum.android.contract.model.ResponseNotOKException;
 import de.petendi.ethereum.android.sample.contract.SimpleOwnedStorage;
 import de.petendi.ethereum.android.service.model.RpcCommand;
 import de.petendi.ethereum.android.service.model.WrappedRequest;
@@ -61,6 +62,12 @@ public class SimpleStorageActivity extends AppCompatActivity {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+        initialize();
+        setContentView(R.layout.activity_simple_storage);
+        applyState();
+    }
+
+    private void initialize() {
         EthereumAndroidFactory ethereumAndroidFactory = new EthereumAndroidFactory(this);
         try {
             ethereumAndroid = ethereumAndroidFactory.create();
@@ -68,8 +75,6 @@ public class SimpleStorageActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.ethereum_ethereum_not_installed, Toast.LENGTH_LONG).show();
             finish();
         }
-        setContentView(R.layout.activity_simple_storage);
-        applyState();
     }
 
     @Override
@@ -192,7 +197,14 @@ public class SimpleStorageActivity extends AppCompatActivity {
         Runnable readTask = new Runnable() {
             @Override
             public void run() {
-                final byte[] owner = Base64.decode(simpleOwnedStorage.currentOwner(),Base64.DEFAULT);
+                String currentOwner;
+                try {
+                    currentOwner = simpleOwnedStorage.currentOwner();
+                } catch(Exception e) {
+                    showError(e);
+                    return;
+                }
+                final byte[] owner = Base64.decode(currentOwner,Base64.DEFAULT);
                 Runnable showResult = new Runnable() {
                     @Override
                     public void run() {
@@ -205,6 +217,26 @@ public class SimpleStorageActivity extends AppCompatActivity {
         new Thread(readTask, "read owner thread").start();
     }
 
+    private void showError(final Exception e) {
+        final String message;
+
+        if (e instanceof ResponseNotOKException) {
+            message = ((ResponseNotOKException) e).getErrorMessage();
+        } else {
+            message = e.getMessage();
+        }
+        Runnable showResult = new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(SimpleStorageActivity.this, "an error occurred: " + message,  Toast.LENGTH_LONG).show();
+                if(!ethereumAndroid.hasServiceConnection()) {
+                    initialize();
+                }
+            }
+        };
+        SimpleStorageActivity.this.runOnUiThread(showResult);
+    }
+
     private void readValue() {
         SharedPreferences prefs = getSharedPreferences(SIMPLE_STORAGE_PREFS, MODE_PRIVATE);
         String contractAddress = prefs.getString(CONTRACT_ADDRESS, null);
@@ -212,7 +244,13 @@ public class SimpleStorageActivity extends AppCompatActivity {
         Runnable readTask = new Runnable() {
             @Override
             public void run() {
-                final String value = simpleOwnedStorage.get();
+                final String value;
+                try {
+                    value = simpleOwnedStorage.get();
+                } catch (Exception e) {
+                    showError(e);
+                    return;
+                }
                 Runnable showResult = new Runnable() {
                     @Override
                     public void run() {
@@ -237,7 +275,13 @@ public class SimpleStorageActivity extends AppCompatActivity {
             Runnable writeTask = new Runnable() {
                 @Override
                 public void run() {
-                    final PendingTransaction<Void> pendingWrite = simpleOwnedStorage.set(value);
+                    final PendingTransaction<Void> pendingWrite;
+                    try {
+                        pendingWrite = simpleOwnedStorage.set(value);
+                    } catch (Exception e) {
+                        showError(e);
+                        return;
+                    }
                     Runnable transactionTask = new Runnable() {
                         @Override
                         public void run() {
