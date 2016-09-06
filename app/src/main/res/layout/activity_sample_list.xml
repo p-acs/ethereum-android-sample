@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/samplelist_layout"
+    tools:context="de.petendi.ethereum.android.sample.SampleListActivity">
+    <Button
+        android:id="@+id/sample_account_balance_button"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/sample_account_balance"
+        android:textStyle="bold" />
+    <Button
+        android:id="@+id/sample_simplestorage_button"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/sample_simple_storage"
+        android:textStyle="bold" />
+</LinearLayout>
